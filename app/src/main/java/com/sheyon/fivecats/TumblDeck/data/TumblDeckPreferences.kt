@@ -8,14 +8,15 @@ class TumblDeckPreferences (context : Context){
     val PREFS_FILENAME = "com.sheyon.fivecats.TumblDeck.prefs"
     val prefs : SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
 
-    val OAUTH_TOKEN = "oauth_token"
-    val OAUTH_SECRET = "oauth_secret"
+    val ACCESS_TOKEN = "oauth_token"
+    val AUTHENTICATED_URL = "authenticated_url"
 
-    var loginToken: String
-        get() = prefs.getString(OAUTH_TOKEN, "")
-        set(value) = prefs.edit().putString(OAUTH_TOKEN, value).apply()
+    var accessToken: String
+        get() = prefs.getString(ACCESS_TOKEN, "")
+        set(value) = prefs.edit().putString(ACCESS_TOKEN, value).apply()
 
-    var loginSecret: String
-        get() = prefs.getString(OAUTH_SECRET, "")
-        set(value) = prefs.edit().putString(OAUTH_SECRET, value).apply()
+    var loginUrl: String
+        get() = prefs.getString(AUTHENTICATED_URL, "")
+        set(value) = prefs.edit().putString(AUTHENTICATED_URL, value).apply()
+
 }
