@@ -26,8 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setupWebView(webViewClient: WebViewClient, url: String) {
-        val webView: WebView = findViewById(R.id.webView)
-
+        
         webView.post {
             webView.webViewClient = webViewClient
             webView.settings.domStorageEnabled = true
