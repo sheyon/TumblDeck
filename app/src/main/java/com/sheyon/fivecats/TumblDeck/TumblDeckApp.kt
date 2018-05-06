@@ -7,6 +7,10 @@ import android.net.NetworkInfo
 
 import com.sheyon.fivecats.TumblDeck.data.TumblDeckPreferences
 
+val prefs : TumblDeckPreferences by lazy {
+    TumblDeckApp.prefs!!
+}
+
 class TumblDeckApp : Application() {
 
     companion object {
@@ -14,21 +18,21 @@ class TumblDeckApp : Application() {
     }
 
     override fun onCreate() {
-        super.onCreate()
         prefs = TumblDeckPreferences(applicationContext)
+        super.onCreate()
     }
 
-    fun isConnected(context: Context): Boolean {
-        var network = false
+    fun isInternetConnected(context: Context): Boolean {
+        var connected = false
         try {
             val cm : ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val activeNetwork : NetworkInfo = cm.activeNetworkInfo
-            network = activeNetwork.isConnectedOrConnecting
+            connected = activeNetwork.isConnectedOrConnecting
         }
         catch (e : Exception) {
             e.printStackTrace()
         }
-
-        return network
+        return connected
     }
+
 }

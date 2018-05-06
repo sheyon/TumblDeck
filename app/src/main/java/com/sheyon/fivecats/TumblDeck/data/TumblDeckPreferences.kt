@@ -3,20 +3,24 @@ package com.sheyon.fivecats.TumblDeck.data
 import android.content.Context
 import android.content.SharedPreferences
 
-class TumblDeckPreferences (context : Context){
+class TumblDeckPreferences (context : Context) {
 
-    val PREFS_FILENAME = "com.sheyon.fivecats.TumblDeck.prefs"
-    val prefs : SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
+    private val PREFS_FILENAME = "com.sheyon.fivecats.TumblDeck.prefs"
+    private val prefs : SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
 
-    val ACCESS_TOKEN = "oauth_token"
-    val AUTHENTICATED_URL = "authenticated_url"
+    private val TOKEN = "oauth_token"
+    private val TOKEN_SECRET = "oauth_token_secret"
+    private val TOKEN_VERIFIER = "oauth_verifier"
 
     var accessToken: String
-        get() = prefs.getString(ACCESS_TOKEN, "")
-        set(value) = prefs.edit().putString(ACCESS_TOKEN, value).apply()
+        get() = prefs.getString(TOKEN, "")
+        set(value) = prefs.edit().putString(TOKEN, value).apply()
 
-    var loginUrl: String
-        get() = prefs.getString(AUTHENTICATED_URL, "")
-        set(value) = prefs.edit().putString(AUTHENTICATED_URL, value).apply()
+    var accessTokenSecret: String
+        get() = prefs.getString(TOKEN_SECRET, "")
+        set(value) = prefs.edit().putString(TOKEN_SECRET, value).apply()
 
+    var accessVerifier: String
+        get() = prefs.getString(TOKEN_VERIFIER, "")
+        set(value) = prefs.edit().putString(TOKEN_VERIFIER, value).apply()
 }
