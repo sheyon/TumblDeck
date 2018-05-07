@@ -3,7 +3,6 @@ package com.sheyon.fivecats.TumblDeck
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.webkit.WebView
 import android.webkit.WebViewClient
 
 import com.sheyon.fivecats.TumblDeck.data.Login
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setupWebView(webViewClient: WebViewClient, url: String) {
-        
+
         webView.post {
             webView.webViewClient = webViewClient
             webView.settings.domStorageEnabled = true

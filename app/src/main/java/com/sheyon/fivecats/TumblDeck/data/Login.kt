@@ -28,7 +28,10 @@ class Login constructor(val activity: MainActivity) {
     private val consumerKey = Retriever().primaryRetriever()
     private val consumerSecret = Retriever().secondaryRetriever()
     private val callbackURL = Retriever().callbackRetriever()
-    private val service: OAuth10aService = ServiceBuilder(consumerKey).apiSecret(consumerSecret).callback(callbackURL).build(TumblrApi.instance())
+    private val service: OAuth10aService = ServiceBuilder(consumerKey)
+            .apiSecret(consumerSecret)
+            .callback(callbackURL)
+            .build(TumblrApi.instance())
 
     lateinit var requestToken: OAuth1RequestToken
     lateinit var accessToken: OAuth1AccessToken
@@ -137,7 +140,6 @@ class Login constructor(val activity: MainActivity) {
     fun finishAuthentication(verifier: String) {
         prefs.accessVerifier = verifier
         Log.d ("DEBUG", "OAuth Verifier: "+ verifier)
-        Log.d ("DEBUG", "Verifier confirmed. Requesting access token...")
         GetAccessTokenAsyncTask().execute()
     }
 
@@ -145,6 +147,7 @@ class Login constructor(val activity: MainActivity) {
     inner class GetAccessTokenAsyncTask : AsyncTask<Void, Void, Void>() {
 
         override fun doInBackground(vararg params: Void?): Void? {
+            Log.d ("DEBUG", "Verifier confirmed. Requesting access token...")
             accessToken = service.getAccessToken(requestToken, oauthVerifier)
 
             prefs.accessToken = accessToken.token
