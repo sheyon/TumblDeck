@@ -47,11 +47,6 @@ class Login constructor(val activity: MainActivity) {
             accessToken = OAuth1AccessToken(prefs.accessToken, prefs.accessTokenSecret)
             oauthVerifier = prefs.accessVerifier
 
-            Log.d ("DEBUG", "Credentials found")
-            Log.d ("DEBUG", "OAuth Verifier: "+ prefs.accessVerifier)
-            Log.d ("DEBUG", "Access Token: " + prefs.accessToken)
-            Log.d ("DEBUG", "Access Token Secret: " + prefs.accessTokenSecret)
-
             GetWelcomeAsyncTask().execute()
         }
         else {
@@ -80,24 +75,29 @@ class Login constructor(val activity: MainActivity) {
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             activity.textView.setText("Welcome " + result + "!")
+            activity.JumblrTest()
         }
     }
 
     @SuppressLint("StaticFieldLeak")
-    inner class GetRequestTokenAsyncTask : AsyncTask<Void, Void, Void>() {
+    inner class GetRequestTokenAsyncTask : AsyncTask<Void, Void, String>() {
+        lateinit var url : String
 
-        override fun doInBackground(vararg params: Void?): Void? {
+        override fun doInBackground(vararg params: Void?): String {
             try {
                 // Obtain the Request Token
                 requestToken = service.requestToken
-                val url = service.getAuthorizationUrl(requestToken)
-
-                setupWebViewClient(url)
+                url = service.getAuthorizationUrl(requestToken)
 
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            return null
+            return url
+        }
+
+        override fun onPostExecute(url: String) {
+            super.onPostExecute(url)
+            setupWebViewClient(url)
         }
     }
 
@@ -139,7 +139,6 @@ class Login constructor(val activity: MainActivity) {
 
     fun finishAuthentication(verifier: String) {
         prefs.accessVerifier = verifier
-        Log.d ("DEBUG", "OAuth Verifier: "+ verifier)
         GetAccessTokenAsyncTask().execute()
     }
 
@@ -152,9 +151,6 @@ class Login constructor(val activity: MainActivity) {
 
             prefs.accessToken = accessToken.token
             prefs.accessTokenSecret = accessToken.tokenSecret
-
-            Log.d ("DEBUG", "Access Token: " + prefs.accessToken)
-            Log.d ("DEBUG", "Access Token Secret: " + prefs.accessTokenSecret)
 
             return null
         }
