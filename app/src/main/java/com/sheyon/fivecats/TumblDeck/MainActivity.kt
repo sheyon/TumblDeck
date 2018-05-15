@@ -7,13 +7,19 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.webkit.WebViewClient
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.StaggeredGridLayoutManager
 
 import com.sheyon.fivecats.TumblDeck.data.Login
 import com.sheyon.fivecats.TumblDeck.data.Retriever
+
 import com.tumblr.jumblr.JumblrClient
 import com.tumblr.jumblr.types.Post
 
 import kotlinx.android.synthetic.main.activity_main.*
+import android.util.DisplayMetrics
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,8 +54,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("StaticFieldLeak")
-    inner class jumblrAsyncTask : AsyncTask<Void, Void, PhotoAdapter>() {
-        override fun doInBackground(vararg params: Void): PhotoAdapter {
+    inner class jumblrAsyncTask : AsyncTask<Void, Void, List<Post>>() {
+        override fun doInBackground(vararg params: Void): List<Post>? {
             val jumblrClient = JumblrClient(Retriever().primaryRetriever(), Retriever().secondaryRetriever())
             jumblrClient.setToken(prefs.accessToken, prefs.accessTokenSecret)
 
@@ -57,15 +63,24 @@ class MainActivity : AppCompatActivity() {
             params.put("type", "photo")
 
             val posts : List<Post> = jumblrClient.userDashboard(params)
-            val adapter = PhotoAdapter(context, R.layout.picture_grid, posts)
 
-            return adapter
+            return posts
         }
 
-        override fun onPostExecute(adapter: PhotoAdapter) {
-            webView.setVisibility(View.GONE)
-            gridView.setAdapter(adapter)
+        override fun onPostExecute(posts: List<Post>) {
+            setAdapter(posts)
         }
     }
 
+    fun setAdapter(posts : List<Post>) {
+        webView.setVisibility(View.GONE)
+
+        val displayMetrics = context.resources.displayMetrics
+        val dpWidth = displayMetrics.widthPixels / displayMetrics.density
+        val noOfColumns = (dpWidth / 180).toInt()
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = StaggeredGridLayoutManager(noOfColumns, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.setAdapter(PhotoAdapter(posts, context))
+    }
 }
