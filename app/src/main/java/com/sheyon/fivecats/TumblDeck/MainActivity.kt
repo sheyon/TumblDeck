@@ -17,9 +17,6 @@ import com.tumblr.jumblr.JumblrClient
 import com.tumblr.jumblr.types.Post
 
 import kotlinx.android.synthetic.main.activity_main.*
-import android.util.DisplayMetrics
-
-
 
 class MainActivity : AppCompatActivity() {
 
