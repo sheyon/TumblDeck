@@ -1,6 +1,7 @@
 package com.sheyon.fivecats.TumblDeck
 
 import android.annotation.SuppressLint
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
@@ -9,9 +10,14 @@ import android.view.View
 import android.webkit.WebViewClient
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
+import android.util.Log
+import android.widget.Button
+import com.sheyon.fivecats.TumblDeck.R.id.recyclerView
+import com.sheyon.fivecats.TumblDeck.R.id.webView
 
 import com.sheyon.fivecats.TumblDeck.data.Login
 import com.sheyon.fivecats.TumblDeck.data.Retriever
+import com.sheyon.fivecats.TumblDeck.viewmodels.PhotoScreenViewModel
 
 import com.tumblr.jumblr.JumblrClient
 import com.tumblr.jumblr.types.Post
@@ -21,12 +27,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     lateinit var context : Context
+    lateinit var recyclerView: RecyclerView
+    lateinit var reloadButton: Button
+    lateinit var sViewModel: PhotoScreenViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        sViewModel = ViewModelProviders.of(this).get(PhotoScreenViewModel::class.java)
+
         context = this
+        reloadButton = findViewById(R.id.ReloadButton)
+        reloadButton.setOnClickListener({
+            JumblrTest()
+        })
 
         if (TumblDeckApp().isInternetConnected(context)) {
             Login(this).checkCredentials()
@@ -47,7 +62,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun JumblrTest() {
-        jumblrAsyncTask().execute()
+        if (sViewModel.posts != null && !sViewModel.posts!!.isEmpty()) {
+            setAdapter(sViewModel.posts!!)
+            Log.d("DEBUG", "Old Posts Found: " + sViewModel.posts)
+        } else {
+            jumblrAsyncTask().execute()
+        }
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -58,8 +78,12 @@ class MainActivity : AppCompatActivity() {
 
             val params = HashMap<String, Any>()
             params.put("type", "photo")
+            if (sViewModel.posts != null && !sViewModel.posts!!.isEmpty()) {
+                params.put("since_id", sViewModel.posts!!.first().id)
+            }
 
             val posts : List<Post> = jumblrClient.userDashboard(params)
+            sViewModel.posts = posts
 
             return posts
         }
@@ -76,8 +100,10 @@ class MainActivity : AppCompatActivity() {
         val dpWidth = displayMetrics.widthPixels / displayMetrics.density
         val noOfColumns = (dpWidth / 180).toInt()
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = StaggeredGridLayoutManager(noOfColumns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.setAdapter(PhotoAdapter(posts, context))
     }
+
+
 }
