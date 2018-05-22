@@ -13,13 +13,11 @@ import com.tumblr.jumblr.types.PhotoPost
 import com.tumblr.jumblr.types.PhotoSize
 import com.tumblr.jumblr.types.Post
 
-import kotlinx.android.synthetic.main.picture_grid.view.*
-
-class PhotoAdapter(val posts: List<Post>, val context: Context) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
+class PhotoAdapter(val posts: List<Post>?, val context: Context) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     class PhotoViewHolder (view: View) : RecyclerView.ViewHolder(view) {
-        val pictureGridPhoto : ImageView = view.photoView
-        val pictureGridLabel : TextView = view.photoPostedBy
+        val pictureGridPhoto : ImageView = view.findViewById(R.id.photoView)
+        val pictureGridLabel : TextView = view.findViewById(R.id.photoPostedBy)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -27,11 +25,14 @@ class PhotoAdapter(val posts: List<Post>, val context: Context) : RecyclerView.A
     }
 
     override fun getItemCount(): Int {
-        return posts.size
+        if (posts != null) {
+            return posts.size
+        }
+        else return 0
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val photoPost = posts[position] as PhotoPost                                                //All photo posts in a payload
+        val photoPost = posts!![position] as PhotoPost                                                //All photo posts in a payload
         val listPhotos = photoPost.photos                                                           //All photos in a post
         val listSizes = listPhotos[0].sizes                                                         //A list of the Tumblr-provided resizes of the [0] photo
 
@@ -60,6 +61,4 @@ class PhotoAdapter(val posts: List<Post>, val context: Context) : RecyclerView.A
             }
         }
     }
-
-
 }

@@ -14,14 +14,12 @@ import com.github.scribejava.apis.TumblrApi
 import com.github.scribejava.core.builder.ServiceBuilder
 import com.github.scribejava.core.model.OAuth1AccessToken
 import com.github.scribejava.core.model.OAuth1RequestToken
-import com.github.scribejava.core.model.OAuthRequest
-import com.github.scribejava.core.model.Verb
 import com.github.scribejava.core.oauth.OAuth10aService
 
 import com.sheyon.fivecats.TumblDeck.MainActivity
+import com.sheyon.fivecats.TumblDeck.R
 import com.sheyon.fivecats.TumblDeck.prefs
-import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONObject
+import com.sheyon.fivecats.TumblDeck.views.WebViewScreen
 
 class Login constructor(val activity: MainActivity) {
 
@@ -47,35 +45,11 @@ class Login constructor(val activity: MainActivity) {
             accessToken = OAuth1AccessToken(prefs.accessToken, prefs.accessTokenSecret)
             oauthVerifier = prefs.accessVerifier
 
-            GetWelcomeAsyncTask().execute()
+            activity.JumblrTest()
         }
         else {
             Log.d ("DEBUG", "No credentials found. Requesting new token...")
             GetRequestTokenAsyncTask().execute()
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    inner class GetWelcomeAsyncTask : AsyncTask<Void, Void, String>() {
-
-        private val PROTECTED_RESOURCE_URL = "http://api.tumblr.com/v2/user/info"
-
-        override fun doInBackground(vararg params: Void?): String {
-
-            val request = OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL)
-            service.signRequest(accessToken, request)
-            val response = service.execute(request)
-
-            val obj = JSONObject(response.body)
-            val name = obj.getJSONObject("response").getJSONObject("user").getString("name")
-
-            return name
-        }
-
-        override fun onPostExecute(result: String?) {
-            super.onPostExecute(result)
-            activity.textView.setText("Welcome " + result + "!")
-            activity.JumblrTest()
         }
     }
 
@@ -134,10 +108,15 @@ class Login constructor(val activity: MainActivity) {
                 return false
             }
         }
-        activity.setupWebView(webViewClient, url)
+
+        activity.swapContainer(R.layout.container_webview)
+        val webViewScreen = activity.getContainer().findViewById<WebViewScreen>(R.id.webView)
+        webViewScreen.setupWebView(webViewClient, url)
     }
 
     fun finishAuthentication(verifier: String) {
+        activity.swapContainer(R.layout.activity_main)
+        activity.setupViews()
         prefs.accessVerifier = verifier
         GetAccessTokenAsyncTask().execute()
     }
@@ -156,7 +135,7 @@ class Login constructor(val activity: MainActivity) {
         }
 
         override fun onPostExecute(result: Void?) {
-            GetWelcomeAsyncTask().execute()
+            activity.JumblrTest()
         }
     }
 }
